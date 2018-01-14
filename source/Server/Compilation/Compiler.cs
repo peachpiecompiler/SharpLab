@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Threading;
@@ -9,6 +10,7 @@ using Microsoft.FSharp.Compiler.SourceCodeServices;
 using Microsoft.FSharp.Control;
 using MirrorSharp.Advanced;
 using MirrorSharp.FSharp.Advanced;
+using MirrorSharp.Php.Advanced;
 
 namespace SharpLab.Server.Compilation {
     public class Compiler : ICompiler {
@@ -16,11 +18,26 @@ namespace SharpLab.Server.Compilation {
             if (session.IsFSharp())
                 return await TryCompileFSharpToStreamAsync(assemblyStream, session, diagnostics, cancellationToken);
 
+            if (session.IsPhp())
+                return TryCompilePhpToStreamAsync(assemblyStream, symbolStream, session, diagnostics);
+
             var compilation = await session.Roslyn.Project.GetCompilationAsync(cancellationToken).ConfigureAwait(false);
             var emitResult = compilation.Emit(assemblyStream, pdbStream: symbolStream);
             if (!emitResult.Success) {
                 foreach (var diagnostic in emitResult.Diagnostics) {
                     diagnostics.Add(diagnostic);
+                }
+                return false;
+            }
+            return true;
+        }
+
+        private bool TryCompilePhpToStreamAsync(MemoryStream assemblyStream, MemoryStream symbolStream, IWorkSession session, IList<Diagnostic> diagnostics) {
+            var compilation = session.Php().Compilation;
+            var emitResult = compilation.Emit(assemblyStream, symbolStream);
+            if (!emitResult.Success) {
+                foreach (var diagnostic in emitResult.Diagnostics) {
+                    diagnostics.Add(diagnostic.ToStandardRoslyn());
                 }
                 return false;
             }
