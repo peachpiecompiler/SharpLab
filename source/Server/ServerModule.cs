@@ -45,6 +45,10 @@ namespace SharpLab.Server {
                    .As<ILanguageAdapter>()
                    .SingleInstance();
 
+            builder.RegisterType<PhpAdapter>()
+                   .As<ILanguageAdapter>()
+                   .SingleInstance();
+
             builder.RegisterType<Compiler>()
                    .As<ICompiler>()
                    .SingleInstance();
