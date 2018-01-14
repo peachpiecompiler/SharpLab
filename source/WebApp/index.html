@@ -32,11 +32,12 @@
                 <option v-bind:value="languages.csharp">C#</option>
                 <option v-bind:value="languages.vb">Visual Basic</option>
                 <option v-bind:value="languages.fsharp">F#</option>
+                <option v-bind:value="languages.php">PHP</option>
               </select>
             </div>
             <div class="offline-only">[connection lost, reconnecting…]</div>
 
-            <div class="select-wrapper option-branch option" v-show="options.language !== languages.fsharp">
+            <div class="select-wrapper option-branch option" v-show="options.language !== languages.fsharp && options.language !== languages.php">
               <select v-model="branch">
                 <option v-bind:value="null">Default</option>
                 <optgroup v-bind:label="group.name" v-for="group in branchGroups">

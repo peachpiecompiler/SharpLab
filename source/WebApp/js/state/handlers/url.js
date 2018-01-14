@@ -10,6 +10,7 @@ const languageAndTargetMap = {
     [languages.csharp]: 'cs',
     [languages.vb]:     'vb',
     [languages.fsharp]: 'fs',
+    [languages.php]:    'php',
     [targets.il]:       'il',
     [targets.asm]:      'asm',
     [targets.ast]:      'ast',

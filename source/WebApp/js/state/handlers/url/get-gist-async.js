@@ -2,7 +2,8 @@ import languages from '../../../helpers/languages.js';
 const languageMap = {
     'C#':           languages.csharp,
     'Visual Basic': languages.vb,
-    'F#':           languages.fsharp
+    'F#':           languages.fsharp,
+    'PHP':          languages.php
 };
 
 export default async function getGistAsync(id) {
