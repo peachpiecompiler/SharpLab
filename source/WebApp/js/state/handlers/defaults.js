@@ -16,7 +16,7 @@ const code = {
 export default {
     getOptions: () => ({
         branchId:   null,
-        language:   languages.php,
+        language:   languages.csharp,
         target:     languages.csharp,
         release:    false
     }),
