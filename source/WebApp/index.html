@@ -2,10 +2,10 @@
 <html>
   <head data-theme-color-manager-bind="status.color">
     <meta charset="UTF-8">
-    <title>SharpLab</title>
+    <title>try.peachpie.io</title>
 
     <meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1">
-    <meta name="theme-color" content="#4684ee">
+    <meta name="theme-color" content="#f4511e">
     <meta name="description" content="C#/VB/F# compiler playground. Not a Shark lab." />
 
     <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,{build:favicon-svg}">
@@ -29,181 +29,183 @@
             <h1>Code</h1>
             <div class="select-wrapper option-language option">
               <select v-model="options.language">
-                <option v-bind:value="languages.csharp">C#</option>
-                <option v-bind:value="languages.vb">Visual Basic</option>
-                <option v-bind:value="languages.fsharp">F#</option>
-                <option v-bind:value="languages.php">PHP</option>
-              </select>
-            </div>
-            <div class="offline-only">[connection lost, reconnecting…]</div>
-
-            <div class="select-wrapper option-branch option" v-show="options.language !== languages.fsharp && options.language !== languages.php">
-              <select v-model="branch">
-                <option v-bind:value="null">Default</option>
-                <optgroup v-bind:label="group.name" v-for="group in branchGroups">
-                  <option v-for="branch in group.branches" v-bind:value="branch">{{branch.name}} ({{formatDate(branch.commits[0].date, 'd mmm yyyy')}})</option>
-                </optgroup>
-              </select>
-            </div>
-
-            <div class="mobile-menu"></div>
-          </header>
-          <div class="content">
-            <app-code-edit v-bind:initial-text="lastLoadedCode"
-                           v-bind:service-url="serviceUrl"
-                           v-bind:server-options="serverOptions"
-                           v-bind:highlighted-range="highlightedCodeRange"
-                           v-bind:execution-flow="result.type === 'run' && result.value ? result.value.flow : null"
-                           v-on:text-change="code = arguments[0]()"
-                           v-on:slow-update-wait="applyUpdateWait"
-                           v-on:slow-update-result="applyUpdateResult"
-                           v-on:server-error="applyServerError"
-                           v-on:connection-change="applyConnectionChange"></app-code-edit>
+                <!--option v-bind:value="languages.csharp">C#</option-->
+                <!--option v-bind:value="languages.vb">Visual Basic</option-->
+                <!--option v-bind:value="languages.fsharp">F#</option-->
+              <option v-bind:value="languages.php">PHP (Peachpie)</option>
+            </select>
           </div>
-        </section>
+          <div class="offline-only">[connection lost, reconnecting…]</div>
 
-        <section v-if="branch" class="info-only branch-info non-code">
-          <header>
-            <h1>Branch {{branch.name}}, last commit</h1>
-          </header>
-          <div class="content">
-            <div>
-              <a v-bind:href="'https://github.com/dotnet/roslyn/commit/' + branch.commits[0].hash" target="_blank">{{branch.commits[0].hash}}</a>
-              at {{formatDate(branch.commits[0].date, 'dd mmm yyyy')}}
-              by {{branch.commits[0].author}}
-            </div>
-            <div class="commit-message">{{branch.commits[0].message.trim()}}</div>
+          <div class="select-wrapper option-branch option" v-show="options.language !== languages.fsharp && options.language !== languages.php">
+            <select v-model="branch">
+              <option v-bind:value="null">Default</option>
+              <optgroup v-bind:label="group.name" v-for="group in branchGroups">
+                <option v-for="branch in group.branches" v-bind:value="branch">{{branch.name}} ({{formatDate(branch.commits[0].date, 'd mmm yyyy')}})</option>
+              </optgroup>
+            </select>
           </div>
-        </section>
-      </div>
 
-      <div class="section-group results" v-bind:class="{ loading: loading }">
-        <section class="result">
-          <header>
-            <button class="mobile-menu-button" v-app-class-toggle="{ target: '.results', class: 'mobile-menu-open' }"></button>
-            <h1>Results</h1>
+          <div class="mobile-menu"></div>
+        </header>
+        <div class="content">
+          <app-code-edit v-bind:initial-text="lastLoadedCode"
+                         v-bind:service-url="serviceUrl"
+                         v-bind:server-options="serverOptions"
+                         v-bind:highlighted-range="highlightedCodeRange"
+                         v-bind:execution-flow="result.type === 'run' && result.value ? result.value.flow : null"
+                         v-on:text-change="code = arguments[0]()"
+                         v-on:slow-update-wait="applyUpdateWait"
+                         v-on:slow-update-result="applyUpdateResult"
+                         v-on:server-error="applyServerError"
+                         v-on:connection-change="applyConnectionChange"></app-code-edit>
+        </div>
+      </section>
 
-            <div class="select-wrapper option-target-language option">
-              <select v-model="options.target">
-                <optgroup label="Decompile">
-                  <option v-bind:value="targets.csharp">C#</option>
-                  <option v-bind:value="targets.vb">Visual Basic</option>
-                  <option v-bind:value="targets.il">IL</option>
-                  <option v-bind:value="targets.asm">JIT Asm</option>
-                </optgroup>
-                <optgroup label="Other">
-                  <option v-bind:value="targets.ast">Syntax Tree</option>
-                  <option v-bind:value="targets.verify">Verify Only</option>
-                </optgroup>
-                <optgroup label="Experimental">
-                  <option v-bind:value="targets.run">Run</option>
-                </optgroup>
-              </select>
-            </div>
-
-            <div class="select-wrapper option-optimizations option">
-              <select v-model="options.release">
-                <option v-bind:value="false">Debug</option>
-                <option v-bind:value="true">Release</option>
-              </select>
-            </div>
-            <div class="mobile-menu"></div>
-          </header>
-          <div class="content">
-            <div class="loader"></div>
-            <app-code-view v-if="lastResultOfType.code"
-                           v-show="result.type === 'code'"
-                           v-bind:value="lastResultOfType.code.value"
-                           v-bind:language="options.target"></app-code-view>
-            <app-ast-view class="ast"
-                          v-if="lastResultOfType.ast"
-                          v-show="result.type === 'ast'"
-                          v-bind:roots="lastResultOfType.ast.value"
-                          v-on:item-hover="applyAstHover"></app-ast-view>
-            <app-verify-view v-if="lastResultOfType.verify"
-                             v-show="result.type === 'verify'"
-                             v-bind:value="lastResultOfType.verify.value"></app-verify-view>
-            <app-output-view v-if="lastResultOfType.run"
-                             v-show="result.type === 'run'"
-                             v-bind:output="lastResultOfType.run.value ? lastResultOfType.run.value.output : []"></app-output-view>
+      <section v-if="branch" class="info-only branch-info non-code">
+        <header>
+          <h1>Branch {{branch.name}}, last commit</h1>
+        </header>
+        <div class="content">
+          <div>
+            <a v-bind:href="'https://github.com/dotnet/roslyn/commit/' + branch.commits[0].hash" target="_blank">{{branch.commits[0].hash}}</a>
+            at {{formatDate(branch.commits[0].date, 'dd mmm yyyy')}}
+            by {{branch.commits[0].author}}
           </div>
-        </section>
+          <div class="commit-message">{{branch.commits[0].message.trim()}}</div>
+        </div>
+      </section>
+    </div>
 
-        <section class="errors" v-show="result.errors.length > 0">
-          <header>
-            <button class="expander" v-app-class-toggle="{ target: '.errors', class: 'collapsed' }"></button>
-            <h1>Errors</h1>
-          </header>
-          <div class="content">
-            <div class="loader"></div>
-            <ul>
-              <li v-for="error in result.errors">
-                <app-diagnostic v-bind:model="error" severity="error"></app-diagnostic>
-              </li>
-            </ul>
+    <div class="section-group results" v-bind:class="{ loading: loading }">
+      <section class="result">
+        <header>
+          <button class="mobile-menu-button" v-app-class-toggle="{ target: '.results', class: 'mobile-menu-open' }"></button>
+          <h1>Results</h1>
+
+          <div class="select-wrapper option-target-language option">
+            <select v-model="options.target">
+              <optgroup label="Decompile">
+                <option v-bind:value="targets.csharp">C#</option>
+                <option v-bind:value="targets.vb">Visual Basic</option>
+                <option v-bind:value="targets.il">IL</option>
+                <!--option v-bind:value="targets.asm">JIT Asm</option-->
+              </optgroup>
+              <optgroup label="Other">
+                <option v-bind:value="targets.ast">Syntax Tree</option>
+                <!--option v-bind:value="targets.verify">Verify Only</option-->
+              </optgroup>
+              <!--optgroup label="Experimental">
+                <option v-bind:value="targets.run">Run</option>
+              </optgroup-->
+            </select>
           </div>
-        </section>
 
-        <section class="warnings collapsed" v-show="result.warnings.length > 0">
-          <header>
-            <button class="expander" v-app-class-toggle="{ target: '.warnings', class: 'collapsed' }"></button>
-            <h1>Warnings</h1>
-          </header>
-          <div class="content">
-            <ul>
-              <li v-for="warning in result.warnings">
-                <app-diagnostic v-bind:model="warning" severity="warning"></app-diagnostic>
-              </li>
-            </ul>
+          <div class="select-wrapper option-optimizations option">
+            <select v-model="options.release">
+              <option v-bind:value="false">Debug</option>
+              <option v-bind:value="true">Release</option>
+            </select>
           </div>
-        </section>
-      </div>
-    </main>
-    <footer>
-      Built by Andrey Shchekin (<a href="http://twitter.com/ashmind">@ashmind</a>) — see <a href="http://github.com/ashmind/SharpLab">SharpLab</a> on GitHub.
-      <span hidden>(Experimental) Also has a <a data-manual-role="toggle-theme">dark theme</a>.</span>
-    </footer>
+          <div class="mobile-menu"></div>
+        </header>
+        <div class="content">
+          <div class="loader"></div>
+          <app-code-view v-if="lastResultOfType.code"
+                         v-show="result.type === 'code'"
+                         v-bind:value="lastResultOfType.code.value"
+                         v-bind:language="options.target"></app-code-view>
+          <app-ast-view class="ast"
+                        v-if="lastResultOfType.ast"
+                        v-show="result.type === 'ast'"
+                        v-bind:roots="lastResultOfType.ast.value"
+                        v-on:item-hover="applyAstHover"></app-ast-view>
+          <app-verify-view v-if="lastResultOfType.verify"
+                           v-show="result.type === 'verify'"
+                           v-bind:value="lastResultOfType.verify.value"></app-verify-view>
+          <app-output-view v-if="lastResultOfType.run"
+                           v-show="result.type === 'run'"
+                           v-bind:output="lastResultOfType.run.value ? lastResultOfType.run.value.output : []"></app-output-view>
+        </div>
+      </section>
 
-    <script type="text/x-template" id="app-ast-view-item">
-      <span v-if="typeof item === 'string'" class="ast-item-wrap ast-item-value">
-        <span class="ast-item-type"></span>
-        {{renderValue(item, 'value')}}
-      </span>
-      <span v-else v-bind:class="'ast-item-wrap ast-item-' + item.type">
-        <button v-if="item.children"></button>
-        <span class="ast-item-type" v-bind:title="item.type"></span>
-        <span class="ast-item-property" v-if="item.property">{{item.property}}:</span>
-        <span v-if="item.value !== undefined" class="ast-inline-value">{{renderValue(item.value, item.type)}}</span>
-        <span class="ast-item-kind">{{item.kind}}</span>
-      </span>
-    </script>
+      <section class="errors" v-show="result.errors.length > 0">
+        <header>
+          <button class="expander" v-app-class-toggle="{ target: '.errors', class: 'collapsed' }"></button>
+          <h1>Errors</h1>
+        </header>
+        <div class="content">
+          <div class="loader"></div>
+          <ul>
+            <li v-for="error in result.errors">
+              <app-diagnostic v-bind:model="error" severity="error"></app-diagnostic>
+            </li>
+          </ul>
+        </div>
+      </section>
 
-    <script type="text/javascript">
-      (function() {
-        var key={"sharplab.io":"06084182-fccf-4a44-a241-dc82ece257e8","edge.sharplab.io":"4abe72ed-eb6a-4530-ac84-f5577b9d2a6a"}[window.location.host];
-        if (!key) return;
-        window.appInsights=function(config){function i(config){t[config]=function(){var i=arguments;t.queue.push(function(){t[config].apply(t,i)})}}var t={config:config},u=document,e=window,o="script",s="AuthenticatedUserContext",h="start",c="stop",l="Track",a=l+"Event",v=l+"Page",y=u.createElement(o),r,f;y.src=config.url||"https://az416426.vo.msecnd.net/scripts/a/ai.0.js";u.getElementsByTagName(o)[0].parentNode.appendChild(y);try{t.cookie=u.cookie}catch(p){}for(t.queue=[],t.version="1.0",r=["Event","Exception","Metric","PageView","Trace","Dependency"];r.length;)i("track"+r.pop());return i("set"+s),i("clear"+s),i(h+a),i(c+a),i(h+v),i(c+v),i("flush"),config.disableExceptionTracking||(r="onerror",i("_"+r),f=e[r],e[r]=function(config,i,u,e,o){var s=f&&f(config,i,u,e,o);return s!==!0&&t["_"+r](config,i,u,e,o),s}),t}({
-          instrumentationKey:key,
-          disableAjaxTracking:true,
-          disableCorrelationHeaders:true
-        });
-      })();
-    </script>
-    <!-- build:js -->
-    <!-- endbuild -->
-    <script>
-      (function() {
-        var host = window.location.host;
-        if (host !== 'sharplab.io' && host !== 'tryroslyn.azurewebsites.net') return;
+      <section class="warnings collapsed" v-show="result.warnings.length > 0">
+        <header>
+          <button class="expander" v-app-class-toggle="{ target: '.warnings', class: 'collapsed' }"></button>
+          <h1>Warnings</h1>
+        </header>
+        <div class="content">
+          <ul>
+            <li v-for="warning in result.warnings">
+              <app-diagnostic v-bind:model="warning" severity="warning"></app-diagnostic>
+            </li>
+          </ul>
+        </div>
+      </section>
+    </div>
+  </main>
+  <footer>
+    Built by Andrey Shchekin (<a href="http://twitter.com/ashmind">@ashmind</a>) — see <a href="http://github.com/ashmind/SharpLab">SharpLab</a> on GitHub.
+    <span hidden>(Experimental) Also has a <a data-manual-role="toggle-theme">dark theme</a>.</span>
+  </footer>
 
-        (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
-        (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
-        m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
-        })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+  <script type="text/x-template" id="app-ast-view-item">
+    <span v-if="typeof item === 'string'" class="ast-item-wrap ast-item-value">
+      <span class="ast-item-type"></span>
+      {{renderValue(item, 'value')}}
+    </span>
+    <span v-else v-bind:class="'ast-item-wrap ast-item-' + item.type">
+      <button v-if="item.children"></button>
+      <span class="ast-item-type" v-bind:title="item.type"></span>
+      <span class="ast-item-property" v-if="item.property">{{item.property}}:</span>
+      <span v-if="item.value !== undefined" class="ast-inline-value">{{renderValue(item.value, item.type)}}</span>
+      <span class="ast-item-kind">{{item.kind}}</span>
+    </span>
+  </script>
 
-        ga('create', 'UA-1782671-10', host);
-        ga('send', 'pageview');
-      })();
-    </script>
-  </body>
+  <script type="text/javascript">
+    (function() {
+      var key={"sharplab.io":"06084182-fccf-4a44-a241-dc82ece257e8","edge.sharplab.io":"4abe72ed-eb6a-4530-ac84-f5577b9d2a6a"}[window.location.host];
+      if (!key) return;
+      window.appInsights=function(config){function i(config){t[config]=function(){var i=arguments;t.queue.push(function(){t[config].apply(t,i)})}}var t={config:config},u=document,e=window,o="script",s="AuthenticatedUserContext",h="start",c="stop",l="Track",a=l+"Event",v=l+"Page",y=u.createElement(o),r,f;y.src=config.url||"https://az416426.vo.msecnd.net/scripts/a/ai.0.js";u.getElementsByTagName(o)[0].parentNode.appendChild(y);try{t.cookie=u.cookie}catch(p){}for(t.queue=[],t.version="1.0",r=["Event","Exception","Metric","PageView","Trace","Dependency"];r.length;)i("track"+r.pop());return i("set"+s),i("clear"+s),i(h+a),i(c+a),i(h+v),i(c+v),i("flush"),config.disableExceptionTracking||(r="onerror",i("_"+r),f=e[r],e[r]=function(config,i,u,e,o){var s=f&&f(config,i,u,e,o);return s!==!0&&t["_"+r](config,i,u,e,o),s}),t}({
+        instrumentationKey:key,
+        disableAjaxTracking:true,
+        disableCorrelationHeaders:true
+      });
+    })();
+  </script>
+  <!-- build:js -->
+              <!-- endbuild -->
+              <script>
+                (function () {
+                  var host = window.location.host;
+                  if (host !== 'sharplab.io' && host !== 'tryroslyn.azurewebsites.net') return;
+
+                  (function (i, s, o, g, r, a, m) {
+                    i['GoogleAnalyticsObject'] = r; i[r] = i[r] || function () {
+                      (i[r].q = i[r].q || []).push(arguments)
+                    }, i[r].l = 1 * new Date(); a = s.createElement(o),
+                      m = s.getElementsByTagName(o)[0]; a.async = 1; a.src = g; m.parentNode.insertBefore(a, m)
+                  })(window, document, 'script', '//www.google-analytics.com/analytics.js', 'ga');
+
+                  ga('create', 'UA-1782671-10', host);
+                  ga('send', 'pageview');
+                })();
+              </script>
+</body>
 </html>

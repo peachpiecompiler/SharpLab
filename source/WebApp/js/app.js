@@ -147,8 +147,8 @@ async function createAppAsync() {
                 if (!this.online)
                     return { name: 'offline', color: '#aaa' };
                 if (!this.result.success)
-                    return { name: 'error', color: '#dc3912' };
-                return { name: 'default', color: '#4684ee' };
+                    return { name: 'error', color: '#e4410e' };
+                return { name: 'default', color: '#f4511e' };
             }
         },
         methods: { applyUpdateWait, applyUpdateResult, applyServerError, applyConnectionChange, applyAstHover }
