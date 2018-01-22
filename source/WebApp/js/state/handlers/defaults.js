@@ -17,7 +17,7 @@ export default {
     getOptions: () => ({
         branchId:   null,
         language:   languages.php,
-        target:     languages.php,
+        target:     languages.csharp,
         release:    false
     }),
 
