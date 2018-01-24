@@ -32,8 +32,9 @@ Write-Output "Resetting '$branchName'..."
 Invoke-Git $sourceRoot checkout $branchName --force
 Invoke-Git $sourceRoot reset --hard origin/$branchName
 #Invoke-Git $sourceRoot clean --force
-if (Test-Path "$sourceRoot\Binaries") {
-    Remove-Item "$sourceRoot\Binaries" -Recurse -Force
+if (Test-Path "$sourceRoot\Binaries\Release") {
+    Write-Output "Removing previous binaries..."
+    Remove-Item "$sourceRoot\Binaries\Release" -Recurse -Force
 }
 
 function Build-Project(
