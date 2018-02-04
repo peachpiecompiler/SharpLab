@@ -17,7 +17,7 @@ export default {
     getOptions: () => ({
         branchId:   null,
         language:   languages.csharp,
-        target:     languages.csharp,
+        target:     'IL',
         release:    false
     }),
 
