@@ -69,9 +69,21 @@ gulp.task('html', ['js', 'less'], () => {
     const jsHash  = md5File.sync('wwwroot/app.min.js');
     const cssHash = md5File.sync('wwwroot/app.min.css');
 
+    // Obtain Peachpie.App package version from the project.assets.json file
+    var pchpVersion = "";
+    const i = process.argv.indexOf("--assets");
+    if (i > -1 && process.argv.length >= i) {
+        const projectAssetsPath = process.argv[i + 1];
+        const projectAssets = fs.readFileSync(projectAssetsPath).toString();
+        const match = projectAssets.match(/"Peachpie\.App\/(\d+\.\d+\.\d+(-[^"]+))"/);
+        if (match) {
+            pchpVersion = " " + match[1];
+        }
+    }
+
     return gulp
         .src('./index.html')
-        .pipe(g.htmlReplace({ js: 'app.min.js?' + jsHash, css: 'app.min.css?' + cssHash })) // eslint-disable-line prefer-template
+        .pipe(g.htmlReplace({ js: 'app.min.js?' + jsHash, css: 'app.min.css?' + cssHash, pchpver: pchpVersion })) // eslint-disable-line prefer-template
         .pipe(g.replace('{build:favicon-svg}', faviconSvgUrlSafe))
         .pipe(gulp.dest('wwwroot'));
 });
