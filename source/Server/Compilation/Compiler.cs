@@ -14,15 +14,15 @@ using MirrorSharp.Php.Advanced;
 
 namespace SharpLab.Server.Compilation {
     public class Compiler : ICompiler {
-        public async Task<bool> TryCompileToStreamAsync(MemoryStream assemblyStream, MemoryStream symbolStream, IWorkSession session, IList<Diagnostic> diagnostics, CancellationToken cancellationToken) {
+        public async Task<bool> TryCompileToStreamAsync(MemoryStream assemblyStream, MemoryStream symbolStream, MemoryStream xmlDocStream, IWorkSession session, IList<Diagnostic> diagnostics, CancellationToken cancellationToken) {
             if (session.IsFSharp())
                 return await TryCompileFSharpToStreamAsync(assemblyStream, session, diagnostics, cancellationToken);
 
             if (session.IsPhp())
-                return TryCompilePhpToStreamAsync(assemblyStream, symbolStream, session, diagnostics);
+                return TryCompilePhpToStreamAsync(assemblyStream, symbolStream, xmlDocStream, session, diagnostics);
 
             var compilation = await session.Roslyn.Project.GetCompilationAsync(cancellationToken).ConfigureAwait(false);
-            var emitResult = compilation.Emit(assemblyStream, pdbStream: symbolStream);
+            var emitResult = compilation.Emit(assemblyStream, pdbStream: symbolStream, xmlDocumentationStream: xmlDocStream);
             if (!emitResult.Success) {
                 foreach (var diagnostic in emitResult.Diagnostics) {
                     diagnostics.Add(diagnostic);
@@ -32,14 +32,23 @@ namespace SharpLab.Server.Compilation {
             return true;
         }
 
-        private bool TryCompilePhpToStreamAsync(MemoryStream assemblyStream, MemoryStream symbolStream, IWorkSession session, IList<Diagnostic> diagnostics) {
+        private bool TryCompilePhpToStreamAsync(MemoryStream assemblyStream, MemoryStream symbolStream, MemoryStream xmlDocStream, IWorkSession session, IList<Diagnostic> diagnostics) {
             var compilation = session.Php().Compilation;
-            var emitResult = compilation.Emit(assemblyStream, symbolStream);
-            if (!emitResult.Success) {
-                foreach (var diagnostic in emitResult.Diagnostics) {
-                    diagnostics.Add(diagnostic.ToStandardRoslyn());
+
+            // TODO: Remove this workaround when it is fixed in Peachpie
+            // We need to store the XML documentation to a separate stream because PhpCompilation.Emit() closes the doc stream
+            using (var dummyDocStream = new MemoryStream()) {
+                var emitResult = compilation.Emit(assemblyStream, symbolStream, dummyDocStream);
+                if (!emitResult.Success) {
+                    foreach (var diagnostic in emitResult.Diagnostics) {
+                        diagnostics.Add(diagnostic.ToStandardRoslyn());
+                    }
+                    return false;
                 }
-                return false;
+
+                // ToArray() is possible even on a closed stream
+                var docBytes = dummyDocStream.ToArray();
+                xmlDocStream.Write(docBytes, 0, docBytes.Length);
             }
             return true;
         }

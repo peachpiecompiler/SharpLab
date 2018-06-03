@@ -19,7 +19,7 @@ namespace SharpLab.Server.Decompilation {
     public class JitAsmDecompiler : IDecompiler {
         public string LanguageName => TargetNames.JitAsm;
 
-        public void Decompile(Stream assemblyStream, TextWriter codeWriter) {
+        public void Decompile(Stream assemblyStream, Stream xmlDocStream, TextWriter codeWriter) {
             var currentSetup = AppDomain.CurrentDomain.SetupInformation;
             using (var dataTarget = DataTarget.AttachToProcess(CurrentProcess.Id, UInt32.MaxValue, AttachFlag.Passive))
             using (var context = AppDomainContext.Create(new AppDomainSetup {

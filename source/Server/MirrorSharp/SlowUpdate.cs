@@ -58,27 +58,32 @@ namespace SharpLab.Server.MirrorSharp {
 
             MemoryStream assemblyStream = null;
             MemoryStream symbolStream = null;
+            MemoryStream xmlDocStream = null;
             try {
                 assemblyStream = _memoryStreamManager.GetStream();
+                xmlDocStream = _memoryStreamManager.GetStream();
                 if (targetName == TargetNames.Run)
                     symbolStream = _memoryStreamManager.GetStream();
 
-                if (!await _compiler.TryCompileToStreamAsync(assemblyStream, symbolStream, session, diagnostics, cancellationToken).ConfigureAwait(false)) {
+                if (!await _compiler.TryCompileToStreamAsync(assemblyStream, symbolStream, xmlDocStream, session, diagnostics, cancellationToken).ConfigureAwait(false)) {
                     assemblyStream.Dispose();
                     symbolStream?.Dispose();
+                    xmlDocStream.Dispose();
                     return null;
                 }
                 assemblyStream.Seek(0, SeekOrigin.Begin);
                 symbolStream?.Seek(0, SeekOrigin.Begin);
+                xmlDocStream.Seek(0, SeekOrigin.Begin);
                 if (targetName == TargetNames.Run)
                     return _executor.Execute(assemblyStream, symbolStream, session);
 
-                // it's fine not to Dispose() here -- MirrorSharp will dispose it after calling WriteResult()
-                return assemblyStream;
+                // it's fine not to Dispose() here -- MirrorSharp will dispose them after calling WriteResult()
+                return new Tuple<Stream, Stream>(assemblyStream, xmlDocStream);
             }
             catch {
                 assemblyStream?.Dispose();
                 symbolStream?.Dispose();
+                xmlDocStream?.Dispose();
                 throw;
             }
         }
@@ -107,9 +112,11 @@ namespace SharpLab.Server.MirrorSharp {
             }
 
             var decompiler = _decompilers[targetName];
-            using (var stream = (Stream)result)
+            var streams = (Tuple<Stream, Stream>)result;
+            using (var assemblyStream = streams.Item1)
+            using (var xmlDocStream = streams.Item2)
             using (var stringWriter = writer.OpenString()) {
-                decompiler.Decompile(stream, stringWriter);
+                decompiler.Decompile(assemblyStream, xmlDocStream, stringWriter);
             }
         }
     }

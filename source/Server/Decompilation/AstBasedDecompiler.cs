@@ -5,7 +5,9 @@ using System.Linq;
 using AshMind.Extensions;
 using ICSharpCode.Decompiler;
 using ICSharpCode.Decompiler.Ast;
+using ICSharpCode.ILSpy.XmlDoc;
 using ICSharpCode.NRefactory.CSharp;
+using ICSharpCode.NRefactory.Documentation;
 using Mono.Cecil;
 using SharpLab.Server.Common;
 
@@ -13,7 +15,7 @@ namespace SharpLab.Server.Decompilation {
     public abstract class AstBasedDecompiler : IDecompiler {
         private static readonly ConcurrentDictionary<string, AssemblyDefinition> AssemblyCache = new ConcurrentDictionary<string, AssemblyDefinition>();
 
-        public void Decompile(Stream assemblyStream, TextWriter codeWriter) {
+        public void Decompile(Stream assemblyStream, Stream xmlDocStream, TextWriter codeWriter) {
             // ReSharper disable once AgentHeisenbug.CallToNonThreadSafeStaticMethodInThreadSafeType
             var module = ModuleDefinition.ReadModule(assemblyStream, new ReaderParameters {
                 AssemblyResolver = PreCachedAssemblyResolver.Instance
@@ -45,6 +47,11 @@ namespace SharpLab.Server.Decompilation {
                 .Where(decl => decl.Name == Pchp.Core.Context.ScriptInfo.ScriptTypeName)
                 .FirstOrDefault()
                 ?.Remove();
+
+            // Add XML comments
+            var docMs = (MemoryStream)xmlDocStream;
+            var xmlDocProvider = new MemoryXmlDocumentationProvider(docMs.GetBuffer(), (int)docMs.Length);
+            AddXmlDocTransform.Run(ast.SyntaxTree, xmlDocProvider);
 
             WriteResult(codeWriter, ast);
         }
