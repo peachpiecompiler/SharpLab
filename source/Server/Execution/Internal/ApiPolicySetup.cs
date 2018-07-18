@@ -76,14 +76,8 @@ namespace SharpLab.Server.Execution.Internal {
                           // required by F#'s printf
                           .Getter(nameof(Console.Out), Allowed)
                 )
-                .Type(typeof(ReadOnlySpan<>), Allowed,
-                    t => t.Member(nameof(ReadOnlySpan<object>.DangerousCreate), Denied)
-                          .Member(nameof(ReadOnlySpan<object>.DangerousGetPinnableReference), Denied)
-                )
-                .Type(typeof(Span<>), Allowed,
-                    t => t.Member(nameof(ReadOnlySpan<object>.DangerousCreate), Denied)
-                          .Member(nameof(ReadOnlySpan<object>.DangerousGetPinnableReference), Denied)
-                )
+                .Type(typeof(ReadOnlySpan<>), Allowed)
+                .Type(typeof(Span<>), Allowed)
                 .Type(typeof(STAThreadAttribute), Allowed)
                 .Type(typeof(NotImplementedException), Neutral, t => t.Constructor(Allowed))
                 .Type(typeof(Type), Neutral, SetupSystemType);
