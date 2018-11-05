@@ -70,14 +70,14 @@ gulp.task('html', ['js', 'less'], () => {
     const cssHash = md5File.sync('wwwroot/app.min.css');
 
     // Obtain Peachpie.App package version from the project.assets.json file
-    var pchpVersion = "";
-    const i = process.argv.indexOf("--assets");
+    let pchpVersion = '';
+    const i = process.argv.indexOf('--assets');
     if (i > -1 && process.argv.length >= i) {
         const projectAssetsPath = process.argv[i + 1];
         const projectAssets = fs.readFileSync(projectAssetsPath).toString();
-        const match = projectAssets.match(/"Peachpie\.App\/(\d+\.\d+\.\d+(-[^"]+))"/);
+        const match = projectAssets.match(/"Peachpie\.App\/(\d+\.\d+\.\d+(-[^"]+)?)"/);
         if (match) {
-            pchpVersion = " " + match[1];
+            pchpVersion = ' ' + match[1];
         }
     }
 
