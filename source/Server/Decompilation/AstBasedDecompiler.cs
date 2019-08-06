@@ -48,6 +48,12 @@ namespace SharpLab.Server.Decompilation {
                 .FirstOrDefault()
                 ?.Remove();
 
+            // Remove assembly and module attributes
+            ast.SyntaxTree.Children
+                .OfType<AttributeSection>()
+                .Where(attr => attr.AttributeTarget == "assembly" || attr.AttributeTarget == "module")
+                .ForEach(attr => attr.Remove());
+
             // Add XML comments
             var docMs = (MemoryStream)xmlDocStream;
             var xmlDocProvider = new MemoryXmlDocumentationProvider(docMs.GetBuffer(), (int)docMs.Length);
