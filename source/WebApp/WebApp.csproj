@@ -79,7 +79,7 @@
       </ResolvedFileToPublish>
     </ItemGroup>
   </Target>
-  <Target Name="TransformWebConfig" AfterTargets="Publish">
+  <Target Name="TransformWebConfig" AfterTargets="Publish" Condition="Exists('Web.$(Configuration).config')">
     <Exec Command="dotnet transform-xdt --xml &quot;Web.config&quot; --transform &quot;Web.$(Configuration).config&quot; --output &quot;$(PublishDir)Web.config&quot;" />
   </Target>
 </Project>
