@@ -125,7 +125,9 @@ Microsoft.FSharp.Collections
      ToArray: Denied
      ToSeq: Denied
      ToString: Denied
+     Transpose: Denied
      Truncate: Denied
+     TryExactlyOne: Denied
      TryFind: Denied
      TryFindBack: Denied
      TryFindIndex: Denied
@@ -232,7 +234,9 @@ Microsoft.FSharp.Collections
      ToArray: Allowed (CollectedEnumerableArgumentRewriter)
      ToList: Allowed (CollectedEnumerableArgumentRewriter)
      ToString: Denied
+     Transpose: Denied
      Truncate: Denied
+     TryExactlyOne: Denied
      TryFind: Denied
      TryFindBack: Denied
      TryFindIndex: Denied
@@ -252,6 +256,10 @@ Microsoft.FSharp.Core
   AllowNullLiteralAttribute: Denied
   AutoOpenAttribute: Denied
   AutoSerializableAttribute: Denied
+  ByRefKinds: Denied
+  ByRefKinds+In: Denied
+  ByRefKinds+InOut: Denied
+  ByRefKinds+Out: Denied
   ClassAttribute: Denied
   CLIEventAttribute: Denied
   CLIMutableAttribute: Denied
@@ -304,6 +312,7 @@ Microsoft.FSharp.Core
   ExtraTopLevelOperators: Allowed
      CreateArray2D: Denied
      CreateDictionary: Allowed (CollectedEnumerableArgumentRewriter)
+     CreateReadOnlyDictionary: Denied
      CreateSet: Allowed (CollectedEnumerableArgumentRewriter)
      Equals: Denied
      get_DefaultAsyncBuilder: Denied
@@ -413,6 +422,8 @@ Microsoft.FSharp.Core
   FSharpResult`2: Denied
   FSharpResult`2+Tags: Denied
   FSharpTypeFunc: Denied
+  FSharpValueOption`1: Denied
+  FSharpValueOption`1+Tags: Denied
   FuncConvert: Denied
   GeneralizableValueAttribute: Denied
   InterfaceAttribute: Denied
@@ -498,6 +509,7 @@ Microsoft.FSharp.Core
      CreateSequence: Allowed
      Decrement: Allowed
      DefaultArg: Allowed
+     DefaultValueArg: Allowed
      Equals: Allowed
      Exit: Allowed
      Exp: Allowed
@@ -748,6 +760,7 @@ Microsoft.FSharp.Core
      GetType: Allowed
      ToString: Allowed
   UnverifiableAttribute: Denied
+  ValueOption: Denied
   VolatileFieldAttribute: Denied
 Microsoft.VisualBasic
   AppWinStyle: Denied
@@ -2145,6 +2158,8 @@ System
      ToString: Allowed
      Truncate: Allowed
   MemberAccessException: Denied
+  Memory`1: Denied
+  MemoryExtensions: Denied
   MethodAccessException: Denied
   MidpointRounding: Denied
   MissingFieldException: Denied
@@ -2266,17 +2281,18 @@ System
      NextDouble: Allowed
      ToString: Allowed
   RankException: Denied
+  ReadOnlyMemory`1: Denied
   ReadOnlySpan`1: Allowed
      .ctor: Allowed
      CopyTo: Allowed
-     DangerousCreate: Denied
-     DangerousGetPinnableReference: Denied
      Equals: Allowed
      get_Empty: Allowed
      get_IsEmpty: Allowed
      get_Item: Allowed
      get_Length: Allowed
+     GetEnumerator: Allowed
      GetHashCode: Allowed
+     GetPinnableReference: Allowed
      GetType: Allowed
      op_Equality: Allowed
      op_Implicit: Allowed
@@ -2285,6 +2301,7 @@ System
      ToArray: Allowed
      ToString: Allowed
      TryCopyTo: Allowed
+  ReadOnlySpan`1+Enumerator: Denied
   ResolveEventArgs: Denied
   ResolveEventHandler: Allowed
      .ctor: Allowed
@@ -2314,6 +2331,7 @@ System
      Parse: Allowed
      ToString: Allowed
      TryParse: Allowed
+  SequencePosition: Denied
   SerializableAttribute: Denied
   Single: Allowed
      CompareTo: Allowed
@@ -2338,15 +2356,15 @@ System
      .ctor: Allowed
      Clear: Allowed
      CopyTo: Allowed
-     DangerousCreate: Denied
-     DangerousGetPinnableReference: Denied
      Equals: Allowed
      Fill: Allowed
      get_Empty: Allowed
      get_IsEmpty: Allowed
      get_Item: Allowed
      get_Length: Allowed
+     GetEnumerator: Allowed
      GetHashCode: Allowed
+     GetPinnableReference: Allowed
      GetType: Allowed
      op_Equality: Allowed
      op_Implicit: Allowed
@@ -2355,7 +2373,7 @@ System
      ToArray: Allowed
      ToString: Allowed
      TryCopyTo: Allowed
-  SpanExtensions: Denied
+  Span`1+Enumerator: Denied
   StackOverflowException: Denied
   STAThreadAttribute: Allowed
      .ctor: Allowed
@@ -3116,6 +3134,7 @@ System.Collections.Generic
      SymmetricExceptWith: Allowed
      ToString: Allowed
      TrimExcess: Allowed
+     TryGetValue: Allowed
      UnionWith: Allowed (CollectedEnumerableArgumentRewriter)
   HashSet`1+Enumerator: Allowed
      Dispose: Allowed
@@ -3407,6 +3426,7 @@ System.Collections.Generic
      SetEquals: Allowed
      SymmetricExceptWith: Allowed
      ToString: Allowed
+     TryGetValue: Allowed
      UnionWith: Allowed (CollectedEnumerableArgumentRewriter)
   SortedSet`1+Enumerator: Allowed
      Dispose: Allowed
@@ -4053,6 +4073,7 @@ System.Linq
      ThenByDescending: Allowed (CollectedEnumerableArgumentRewriter)
      ToArray: Allowed (CollectedEnumerableArgumentRewriter)
      ToDictionary: Allowed (CollectedEnumerableArgumentRewriter)
+     ToHashSet: Denied
      ToList: Allowed (CollectedEnumerableArgumentRewriter)
      ToLookup: Allowed (CollectedEnumerableArgumentRewriter)
      ToString: Denied
