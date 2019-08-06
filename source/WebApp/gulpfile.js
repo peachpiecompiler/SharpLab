@@ -54,7 +54,7 @@ gulp.task('favicons', () => {
         .pipe(gulp.dest('wwwroot'));
 });
 
-gulp.task('html', ['js', 'less'], () => {
+gulp.task('html', gulp.series('js', 'less', () => {
     const faviconSvg = fs.readFileSync('favicon.svg', 'utf8');
     // http://codepen.io/jakob-e/pen/doMoML
     const faviconSvgUrlSafe = faviconSvg
@@ -86,13 +86,13 @@ gulp.task('html', ['js', 'less'], () => {
         .pipe(g.htmlReplace({ js: 'app.min.js?' + jsHash, css: 'app.min.css?' + cssHash, pchpver: pchpVersion })) // eslint-disable-line prefer-template
         .pipe(g.replace('{build:favicon-svg}', faviconSvgUrlSafe))
         .pipe(gulp.dest('wwwroot'));
-});
+}));
 
-gulp.task('watch', ['default'], () => {
+gulp.task('default', gulp.series('less', 'js', 'favicons', 'html'));
+
+gulp.task('watch', gulp.series('default', () => {
     gulp.watch('less/**/*.*', ['less', 'html']);
     gulp.watch('js/**/*.js', ['js', 'html']);
     gulp.watch('favicon*.svg', ['favicons']);
     gulp.watch('index.html', ['html']);
-});
-
-gulp.task('default', ['less', 'js', 'favicons', 'html']);
+}));
