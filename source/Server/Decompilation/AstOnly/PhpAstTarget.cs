@@ -388,13 +388,13 @@ namespace SharpLab.Server.Decompilation.AstOnly
                 base.VisitActualParam(x);
             }
 
-            public override void VisitNamedActualParam(NamedActualParam x) {
-                VisitSpecificElementProlog();
+            //public override void VisitNamedActualParam(NamedActualParam x) {
+            //    VisitSpecificElementProlog();
 
-                SerializeToken(nameof(x.Name), x.Name.ToString(), null);
+            //    SerializeToken(nameof(x.Name), x.Name.ToString(), null);
 
-                base.VisitNamedActualParam(x);
-            }
+            //    base.VisitNamedActualParam(x);
+            //}
 
             public override void VisitPrimitiveTypeRef(PrimitiveTypeRef x) {
                 VisitSpecificElementProlog();
