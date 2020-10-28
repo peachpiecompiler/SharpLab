@@ -36,7 +36,7 @@
     <PackageReference Include="MirrorSharp.VisualBasic" Version="0.9.2-pchp" />
     <PackageReference Include="MirrorSharp.Php" Version="0.9.2-pchp" />
     <PackageReference Include="SharpDisasm" Version="1.1.5" />
-    <PackageReference Include="System.Memory" Version="4.5.3" />
+    <PackageReference Include="System.Memory" Version="4.5.4" />
     <PackageReference Include="Unbreakable" Version="0.6.1-unproven" />
     <PackageReference Include="Unbreakable.Build.PolicyReport" Version="0.0.10" />
     <PackageReference Include="Unbreakable.Policy" Version="0.1.2-unproven" />

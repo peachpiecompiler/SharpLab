@@ -54,6 +54,9 @@
   <ItemGroup Condition="'@(_GulpOutputs)' == ''">
     <_GulpOutputs Include="$(wwwroot)\.any" />
   </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="System.Memory" Version="4.5.4" />
+  </ItemGroup>
   <Target Name="Gulp" AfterTargets="Build" Inputs="@(_GulpInputs)" Outputs="@(_GulpOutputs)">
     <Exec Command="node_modules\.bin\gulp.cmd --assets &quot;$(ProjectAssetsFile)&quot;" />
     <ItemGroup>
